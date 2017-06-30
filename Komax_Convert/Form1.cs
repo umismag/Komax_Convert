@@ -59,8 +59,8 @@ namespace Komax_Convert
 					}
 						
 				});
-				progressBar1.Visible = true;
-				//label4.Text = (await ProcessAsync(WB, onChangeProgress)).ToString() + " рядків.";
+				
+				await ProcessAsync(WB, onChangeProgress);
 				//ViewTree(NewArticles);
 				textBox1.Text = GenerateText(NewArticles);
 
