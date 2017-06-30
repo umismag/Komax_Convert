@@ -37,8 +37,8 @@ namespace Komax_Convert
 				if (xlsFile.ShowDialog() == DialogResult.OK)
 				{
 					WB = await OpenXLSAsync(xlsFile.FileName);
-					label2.Text = xlsFile.FileName;
-					toolTip1.SetToolTip(label2, xlsFile.FileName);
+					toolStripStatusLabel1.Text = xlsFile.SafeFileName;
+					toolStripStatusLabel1.ToolTipText=xlsFile.FileName;
 					this.Activate();
 				}
 				else
@@ -46,14 +46,21 @@ namespace Komax_Convert
 								
 				IProgress<int> onChangeProgress = new Progress<int>((i) =>
 				{
-					label4.Text = i.ToString();
-					if (progressBar1.Maximum == 0)
-						progressBar1.Maximum = i;
+
+					if (toolStripProgressBar1.Maximum == 0)
+					{
+						toolStripProgressBar1.Maximum = i;
+						toolStripStatusLabel1.Text += ", ("+ i.ToString()+" рядків)";
+					}
 					else
-						progressBar1.Value = i;
+					{
+						toolStripStatusLabel4.Text = i.ToString();
+						toolStripProgressBar1.Value = i;
+					}
+						
 				});
 				progressBar1.Visible = true;
-				label4.Text = (await ProcessAsync(WB, onChangeProgress)).ToString() + " рядків.";
+				//label4.Text = (await ProcessAsync(WB, onChangeProgress)).ToString() + " рядків.";
 				//ViewTree(NewArticles);
 				textBox1.Text = GenerateText(NewArticles);
 
