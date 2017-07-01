@@ -10,22 +10,24 @@ using System.Windows.Forms;
 using Microsoft.Office.Interop.Excel;
 using System.Reflection;
 using System.IO;
+using System.Threading;
 
 namespace Komax_Convert
 {
 	public partial class Form1 : Form
 	{
 		Microsoft.Office.Interop.Excel.Application XL;
+		CancellationTokenSource cts = new CancellationTokenSource();
 
 		public Form1()
 		{
 			InitializeComponent();
-
+			
 		}
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-
+			toolStripButton3.Click += delegate{ cts.Cancel(); };
 		}
 
 		private async void button1_Click(object sender, EventArgs e)
@@ -34,6 +36,7 @@ namespace Komax_Convert
 			{
 				Workbook WB;
 				OpenFileDialog xlsFile = new OpenFileDialog();
+				xlsFile.Filter = "Excel files (*.xls)|*.xls|Excel files (*.xlsx)|*.xlsx";
 				if (xlsFile.ShowDialog() == DialogResult.OK)
 				{
 					WB = await OpenXLSAsync(xlsFile.FileName);
@@ -59,8 +62,8 @@ namespace Komax_Convert
 					}
 						
 				});
-				
-				await ProcessAsync(WB, onChangeProgress);
+
+				await ProcessAsync(WB, onChangeProgress,cts.Token);
 				//ViewTree(NewArticles);
 				textBox1.Text = GenerateText(NewArticles);
 
@@ -277,7 +280,7 @@ namespace Komax_Convert
 
 		}
 
-		Task<int> ProcessAsync(Workbook WB, IProgress<int> ChangeProgressBar)
+		Task<int> ProcessAsync(Workbook WB, IProgress<int> ChangeProgressBar, CancellationToken cancellationToken)
 		{
 			return Task.Run(() =>
 		  {
@@ -298,6 +301,9 @@ namespace Komax_Convert
 			  int CurrentRow = NumberOfFirstRow;
 			  while (T1.Cells[CurrentRow, ColumnNumbers.WireSm2].Value != null)
 			  {
+				  if (cancellationToken.IsCancellationRequested)
+					  break;
+
 				  Wire wr = new Wire(T1.Cells[CurrentRow, ColumnNumbers.WireSm2].Value,
 					  T1.Cells[CurrentRow, ColumnNumbers.WireColorNew].Value.ToString(), T1.Cells[CurrentRow, ColumnNumbers.WireKey].Value.ToString().Replace(',', '.'));
 				  
@@ -411,9 +417,18 @@ namespace Komax_Convert
 
 		private void button2_Click(object sender, EventArgs e)
 		{
-			if (MessageBox.Show("Записати зміни?", "Збереження змін", MessageBoxButtons.YesNo) == DialogResult.Yes)
-
-				File.WriteAllText(@"Article.dds", textBox1.Text);
+			try
+			{
+				SaveFileDialog sfd = new SaveFileDialog();
+				sfd.Filter = "DDS files(*.dds)|*.dds";
+				sfd.FileName = "Article.dds";
+				if (sfd.ShowDialog() == DialogResult.OK)
+					File.WriteAllText(sfd.FileName, textBox1.Text);
+			}
+			catch (Exception err)
+			{
+				MessageBox.Show(err.Message);
+			}
 		}
 	}
 
