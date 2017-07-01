@@ -17,7 +17,7 @@ namespace Komax_Convert
 	public partial class Form1 : Form
 	{
 		Microsoft.Office.Interop.Excel.Application XL;
-		CancellationTokenSource cts = new CancellationTokenSource();
+		
 
 		public Form1()
 		{
@@ -27,7 +27,7 @@ namespace Komax_Convert
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			toolStripButton3.Click += delegate{ cts.Cancel(); };
+			
 		}
 
 		private async void button1_Click(object sender, EventArgs e)
@@ -46,7 +46,10 @@ namespace Komax_Convert
 				}
 				else
 					return;
-								
+
+				textBox1.Text = string.Empty;
+				groupBox2.Text = "dds - формат";
+
 				IProgress<int> onChangeProgress = new Progress<int>((i) =>
 				{
 
@@ -62,6 +65,10 @@ namespace Komax_Convert
 					}
 						
 				});
+
+				CancellationTokenSource cts = new CancellationTokenSource();
+				toolStripButton3.Click += delegate { cts.Cancel(); };
+
 
 				await ProcessAsync(WB, onChangeProgress,cts.Token);
 				//ViewTree(NewArticles);
@@ -423,11 +430,15 @@ namespace Komax_Convert
 				sfd.Filter = "DDS files(*.dds)|*.dds";
 				sfd.FileName = "Article.dds";
 				if (sfd.ShowDialog() == DialogResult.OK)
+				{
 					File.WriteAllText(sfd.FileName, textBox1.Text);
+					groupBox2.Text = "Файл " + sfd.FileName + " успішно записано";
+				}
 			}
 			catch (Exception err)
 			{
 				MessageBox.Show(err.Message);
+				groupBox2.Text = "Помилка ";
 			}
 		}
 	}
