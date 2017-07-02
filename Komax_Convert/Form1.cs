@@ -219,10 +219,12 @@ namespace Komax_Convert
 			WireMarka = 36,
 			WireMarkaNew = 59,                      //!!!!!
 			Pieces = 40,
+			BatchSize = 42,
 			NameOfNewLeadSet = 56,
 			ArticleKey = 58,
 			WireKey = 59,
 			FontKey = 64,
+					
 
 			MarkingTextBegin1_distance = 66,
 			MarkingTextBegin1_MarkingText = 65,
@@ -337,6 +339,8 @@ namespace Komax_Convert
 
 				  int pieces = (int)T1.Cells[CurrentRow, ColumnNumbers.Pieces].Value;
 
+				  int batchSize = (int)T1.Cells[CurrentRow, ColumnNumbers.BatchSize].Value;
+
 				  string fontKey = T1.Cells[CurrentRow, ColumnNumbers.FontKey].Value;
 
 				  MarkingText MTBegin1 = new MarkingText(
@@ -399,7 +403,7 @@ namespace Komax_Convert
 					  MTEnd3
 				  });
 
-				  NewLeadSet nls = new NewLeadSet(name, new string[] { wr.WireKey }, new double[] { wireLength }, strippingLength, pullOffLength, pieces, fontKey, nmtw);
+				  NewLeadSet nls = new NewLeadSet(name, new string[] { wr.WireKey }, new double[] { wireLength }, strippingLength, pullOffLength, pieces, fontKey, nmtw, batchSize);
 
 				  if (NewArticles.ContainsKey(ArticleKey))
 				  {
@@ -634,6 +638,16 @@ namespace Komax_Convert
 			}
 		}
 
+		string fontKey;
+		public string FontKey
+		{
+			get { return fontKey; }
+			set
+			{
+				fontKey = value;
+			}
+		}
+
 		double?[] strippingLength = new double?[3];
 		public double?[] StrippingLength
 		{
@@ -670,15 +684,17 @@ namespace Komax_Convert
 			}
 		}
 
-		string fontKey;
-		public string FontKey
+		int batchSize;
+		public int BatchSize
 		{
-			get { return fontKey; }
+			get { return batchSize; }
 			set
 			{
-				fontKey = value;
+				batchSize = value;
 			}
 		}
+
+		
 
 		NewMarkingTextWire newMarkingText;
 		public NewMarkingTextWire NewMarkingText
@@ -726,6 +742,11 @@ namespace Komax_Convert
 		public NewLeadSet(string name, string[] wireKey, double[] wireLength, double?[] strippingLength, double?[] pullOffLength, int pieces, string fontKey, NewMarkingTextWire newMarkingTextWire) : this(name, wireKey, wireLength, strippingLength, pullOffLength, pieces, fontKey)
 		{
 			NewMarkingText = newMarkingTextWire;
+		}
+
+		public NewLeadSet(string name, string[] wireKey, double[] wireLength, double?[] strippingLength, double?[] pullOffLength, int pieces, string fontKey, NewMarkingTextWire newMarkingTextWire, int batchSize) : this(name, wireKey, wireLength, strippingLength, pullOffLength, pieces, fontKey, newMarkingTextWire)
+		{
+			BatchSize=batchSize;
 		}
 
 		public List<string> PrintNewLeadSet()
