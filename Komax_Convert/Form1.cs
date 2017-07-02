@@ -10,22 +10,24 @@ using System.Windows.Forms;
 using Microsoft.Office.Interop.Excel;
 using System.Reflection;
 using System.IO;
+using System.Threading;
 
 namespace Komax_Convert
 {
 	public partial class Form1 : Form
 	{
 		Microsoft.Office.Interop.Excel.Application XL;
+		
 
 		public Form1()
 		{
 			InitializeComponent();
-
+			
 		}
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-
+			
 		}
 
 		private async void button1_Click(object sender, EventArgs e)
@@ -34,26 +36,41 @@ namespace Komax_Convert
 			{
 				Workbook WB;
 				OpenFileDialog xlsFile = new OpenFileDialog();
+				xlsFile.Filter = "Excel files (*.xls)|*.xls|Excel files (*.xlsx)|*.xlsx";
 				if (xlsFile.ShowDialog() == DialogResult.OK)
 				{
 					WB = await OpenXLSAsync(xlsFile.FileName);
-					label2.Text = xlsFile.FileName;
-					toolTip1.SetToolTip(label2, xlsFile.FileName);
+					toolStripStatusLabel1.Text = xlsFile.SafeFileName;
+					toolStripStatusLabel1.ToolTipText=xlsFile.FileName;
 					this.Activate();
 				}
 				else
 					return;
-								
+
+				textBox1.Text = string.Empty;
+				groupBox2.Text = "dds - формат";
+
 				IProgress<int> onChangeProgress = new Progress<int>((i) =>
 				{
-					label4.Text = i.ToString();
-					if (progressBar1.Maximum == 0)
-						progressBar1.Maximum = i;
+
+					if (toolStripProgressBar1.Maximum == 0)
+					{
+						toolStripProgressBar1.Maximum = i;
+						toolStripStatusLabel1.Text += ", ("+ i.ToString()+" рядків)";
+					}
 					else
-						progressBar1.Value = i;
+					{
+						toolStripStatusLabel4.Text = i.ToString();
+						toolStripProgressBar1.Value = i;
+					}
+						
 				});
-				progressBar1.Visible = true;
-				label4.Text = (await ProcessAsync(WB, onChangeProgress)).ToString() + " рядків.";
+
+				CancellationTokenSource cts = new CancellationTokenSource();
+				toolStripButton3.Click += delegate { cts.Cancel(); };
+
+
+				await ProcessAsync(WB, onChangeProgress,cts.Token);
 				//ViewTree(NewArticles);
 				textBox1.Text = GenerateText(NewArticles);
 
@@ -202,10 +219,12 @@ namespace Komax_Convert
 			WireMarka = 36,
 			WireMarkaNew = 59,                      //!!!!!
 			Pieces = 40,
+			BatchSize = 42,
 			NameOfNewLeadSet = 56,
 			ArticleKey = 58,
 			WireKey = 59,
 			FontKey = 64,
+					
 
 			MarkingTextBegin1_distance = 66,
 			MarkingTextBegin1_MarkingText = 65,
@@ -270,7 +289,7 @@ namespace Komax_Convert
 
 		}
 
-		Task<int> ProcessAsync(Workbook WB, IProgress<int> ChangeProgressBar)
+		Task<int> ProcessAsync(Workbook WB, IProgress<int> ChangeProgressBar, CancellationToken cancellationToken)
 		{
 			return Task.Run(() =>
 		  {
@@ -291,6 +310,9 @@ namespace Komax_Convert
 			  int CurrentRow = NumberOfFirstRow;
 			  while (T1.Cells[CurrentRow, ColumnNumbers.WireSm2].Value != null)
 			  {
+				  if (cancellationToken.IsCancellationRequested)
+					  break;
+
 				  Wire wr = new Wire(T1.Cells[CurrentRow, ColumnNumbers.WireSm2].Value,
 					  T1.Cells[CurrentRow, ColumnNumbers.WireColorNew].Value.ToString(), T1.Cells[CurrentRow, ColumnNumbers.WireKey].Value.ToString().Replace(',', '.'));
 				  
@@ -316,6 +338,8 @@ namespace Komax_Convert
 					GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.PullOffLength2].Value)};
 
 				  int pieces = (int)T1.Cells[CurrentRow, ColumnNumbers.Pieces].Value;
+
+				  int batchSize = (int)T1.Cells[CurrentRow, ColumnNumbers.BatchSize].Value;
 
 				  string fontKey = T1.Cells[CurrentRow, ColumnNumbers.FontKey].Value;
 
@@ -379,7 +403,7 @@ namespace Komax_Convert
 					  MTEnd3
 				  });
 
-				  NewLeadSet nls = new NewLeadSet(name, new string[] { wr.WireKey }, new double[] { wireLength }, strippingLength, pullOffLength, pieces, fontKey, nmtw);
+				  NewLeadSet nls = new NewLeadSet(name, new string[] { wr.WireKey }, new double[] { wireLength }, strippingLength, pullOffLength, pieces, fontKey, nmtw, batchSize);
 
 				  if (NewArticles.ContainsKey(ArticleKey))
 				  {
@@ -404,9 +428,22 @@ namespace Komax_Convert
 
 		private void button2_Click(object sender, EventArgs e)
 		{
-			if (MessageBox.Show("Записати зміни?", "Збереження змін", MessageBoxButtons.YesNo) == DialogResult.Yes)
-
-				File.WriteAllText(@"Article.dds", textBox1.Text);
+			try
+			{
+				SaveFileDialog sfd = new SaveFileDialog();
+				sfd.Filter = "DDS files(*.dds)|*.dds";
+				sfd.FileName = "Article.dds";
+				if (sfd.ShowDialog() == DialogResult.OK)
+				{
+					File.WriteAllText(sfd.FileName, textBox1.Text);
+					groupBox2.Text = "Файл " + sfd.FileName + " успішно записано";
+				}
+			}
+			catch (Exception err)
+			{
+				MessageBox.Show(err.Message);
+				groupBox2.Text = "Помилка ";
+			}
 		}
 	}
 
@@ -601,6 +638,16 @@ namespace Komax_Convert
 			}
 		}
 
+		string fontKey;
+		public string FontKey
+		{
+			get { return fontKey; }
+			set
+			{
+				fontKey = value;
+			}
+		}
+
 		double?[] strippingLength = new double?[3];
 		public double?[] StrippingLength
 		{
@@ -637,15 +684,17 @@ namespace Komax_Convert
 			}
 		}
 
-		string fontKey;
-		public string FontKey
+		int batchSize;
+		public int BatchSize
 		{
-			get { return fontKey; }
+			get { return batchSize; }
 			set
 			{
-				fontKey = value;
+				batchSize = value;
 			}
 		}
+
+		
 
 		NewMarkingTextWire newMarkingText;
 		public NewMarkingTextWire NewMarkingText
@@ -693,6 +742,11 @@ namespace Komax_Convert
 		public NewLeadSet(string name, string[] wireKey, double[] wireLength, double?[] strippingLength, double?[] pullOffLength, int pieces, string fontKey, NewMarkingTextWire newMarkingTextWire) : this(name, wireKey, wireLength, strippingLength, pullOffLength, pieces, fontKey)
 		{
 			NewMarkingText = newMarkingTextWire;
+		}
+
+		public NewLeadSet(string name, string[] wireKey, double[] wireLength, double?[] strippingLength, double?[] pullOffLength, int pieces, string fontKey, NewMarkingTextWire newMarkingTextWire, int batchSize) : this(name, wireKey, wireLength, strippingLength, pullOffLength, pieces, fontKey, newMarkingTextWire)
+		{
+			BatchSize=batchSize;
 		}
 
 		public List<string> PrintNewLeadSet()

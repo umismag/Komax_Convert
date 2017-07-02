@@ -29,148 +29,129 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.button3 = new System.Windows.Forms.Button();
-			this.button2 = new System.Windows.Forms.Button();
-			this.button1 = new System.Windows.Forms.Button();
-			this.progressBar1 = new System.Windows.Forms.ProgressBar();
-			this.label4 = new System.Windows.Forms.Label();
-			this.label3 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
-			this.label1 = new System.Windows.Forms.Label();
+			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+			this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+			this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+			this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+			this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
+			this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.textBox1 = new System.Windows.Forms.TextBox();
-			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-			this.splitContainer1.Panel1.SuspendLayout();
-			this.splitContainer1.Panel2.SuspendLayout();
-			this.splitContainer1.SuspendLayout();
-			this.groupBox1.SuspendLayout();
+			this.statusStrip1.SuspendLayout();
+			this.toolStrip1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// splitContainer1
+			// statusStrip1
 			// 
-			this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-			this.splitContainer1.Name = "splitContainer1";
+			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1,
+            this.toolStripProgressBar1,
+            this.toolStripStatusLabel2,
+            this.toolStripStatusLabel4,
+            this.toolStripStatusLabel3});
+			this.statusStrip1.Location = new System.Drawing.Point(0, 459);
+			this.statusStrip1.Name = "statusStrip1";
+			this.statusStrip1.Size = new System.Drawing.Size(480, 22);
+			this.statusStrip1.TabIndex = 3;
+			this.statusStrip1.Text = "statusStrip1";
 			// 
-			// splitContainer1.Panel1
+			// toolStripStatusLabel1
 			// 
-			this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
+			this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+			this.toolStripStatusLabel1.Size = new System.Drawing.Size(102, 17);
+			this.toolStripStatusLabel1.Text = "Файл не вибрано";
 			// 
-			// splitContainer1.Panel2
+			// toolStripProgressBar1
 			// 
-			this.splitContainer1.Panel2.Controls.Add(this.groupBox2);
-			this.splitContainer1.Size = new System.Drawing.Size(709, 460);
-			this.splitContainer1.SplitterDistance = 382;
-			this.splitContainer1.TabIndex = 2;
+			this.toolStripProgressBar1.Maximum = 0;
+			this.toolStripProgressBar1.Name = "toolStripProgressBar1";
+			this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
 			// 
-			// groupBox1
+			// toolStripStatusLabel2
 			// 
-			this.groupBox1.Controls.Add(this.button3);
-			this.groupBox1.Controls.Add(this.button2);
-			this.groupBox1.Controls.Add(this.button1);
-			this.groupBox1.Controls.Add(this.progressBar1);
-			this.groupBox1.Controls.Add(this.label4);
-			this.groupBox1.Controls.Add(this.label3);
-			this.groupBox1.Controls.Add(this.label2);
-			this.groupBox1.Controls.Add(this.label1);
-			this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.groupBox1.Location = new System.Drawing.Point(0, 0);
-			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(382, 460);
-			this.groupBox1.TabIndex = 2;
-			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "Детальна інформація";
+			this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+			this.toolStripStatusLabel2.Size = new System.Drawing.Size(74, 17);
+			this.toolStripStatusLabel2.Text = "Оброблено:";
 			// 
-			// button3
+			// toolStripStatusLabel4
 			// 
-			this.button3.Location = new System.Drawing.Point(3, 166);
-			this.button3.Name = "button3";
-			this.button3.Size = new System.Drawing.Size(75, 23);
-			this.button3.TabIndex = 8;
-			this.button3.Text = "Відмінити";
-			this.button3.UseVisualStyleBackColor = true;
+			this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
+			this.toolStripStatusLabel4.Size = new System.Drawing.Size(13, 17);
+			this.toolStripStatusLabel4.Text = "0";
 			// 
-			// button2
+			// toolStripStatusLabel3
 			// 
-			this.button2.Location = new System.Drawing.Point(3, 137);
-			this.button2.Name = "button2";
-			this.button2.Size = new System.Drawing.Size(106, 23);
-			this.button2.TabIndex = 7;
-			this.button2.Text = "Записати *.dds";
-			this.button2.UseVisualStyleBackColor = true;
-			this.button2.Click += new System.EventHandler(this.button2_Click);
+			this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+			this.toolStripStatusLabel3.Size = new System.Drawing.Size(44, 17);
+			this.toolStripStatusLabel3.Text = " рядків";
 			// 
-			// button1
+			// toolStrip1
 			// 
-			this.button1.Location = new System.Drawing.Point(6, 78);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(75, 23);
-			this.button1.TabIndex = 6;
-			this.button1.Text = "Відкрити";
-			this.button1.UseVisualStyleBackColor = true;
-			this.button1.Click += new System.EventHandler(this.button1_Click);
+			this.toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
+			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton1,
+            this.toolStripButton2,
+            this.toolStripSeparator1,
+            this.toolStripButton3});
+			this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+			this.toolStrip1.Name = "toolStrip1";
+			this.toolStrip1.Size = new System.Drawing.Size(480, 39);
+			this.toolStrip1.TabIndex = 4;
+			this.toolStrip1.Text = "toolStrip1";
 			// 
-			// progressBar1
+			// toolStripButton1
 			// 
-			this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.progressBar1.Location = new System.Drawing.Point(9, 53);
-			this.progressBar1.Maximum = 0;
-			this.progressBar1.Name = "progressBar1";
-			this.progressBar1.Size = new System.Drawing.Size(367, 19);
-			this.progressBar1.Step = 1;
-			this.progressBar1.TabIndex = 5;
-			this.progressBar1.Visible = false;
-			this.progressBar1.Click += new System.EventHandler(this.progressBar1_Click);
+			this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+			this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton1.Name = "toolStripButton1";
+			this.toolStripButton1.Size = new System.Drawing.Size(36, 36);
+			this.toolStripButton1.Text = "toolStripButton1";
+			this.toolStripButton1.ToolTipText = "Відкрити xls файл";
+			this.toolStripButton1.Click += new System.EventHandler(this.button1_Click);
 			// 
-			// label4
+			// toolStripButton2
 			// 
-			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(78, 37);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(13, 13);
-			this.label4.TabIndex = 4;
-			this.label4.Text = "0";
+			this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
+			this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton2.Name = "toolStripButton2";
+			this.toolStripButton2.Size = new System.Drawing.Size(36, 36);
+			this.toolStripButton2.Text = "toolStripButton2";
+			this.toolStripButton2.ToolTipText = "Зберегти dds файл";
+			this.toolStripButton2.Click += new System.EventHandler(this.button2_Click);
 			// 
-			// label3
+			// toolStripSeparator1
 			// 
-			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(6, 37);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(66, 13);
-			this.label3.TabIndex = 3;
-			this.label3.Text = "Оброблено:";
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 39);
 			// 
-			// label2
+			// toolStripButton3
 			// 
-			this.label2.AutoEllipsis = true;
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(51, 16);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(96, 13);
-			this.label2.TabIndex = 1;
-			this.label2.Text = "Файл не вибрано";
-			// 
-			// label1
-			// 
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(6, 16);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(39, 13);
-			this.label1.TabIndex = 0;
-			this.label1.Text = "Файл:";
+			this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
+			this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton3.Name = "toolStripButton3";
+			this.toolStripButton3.Size = new System.Drawing.Size(36, 36);
+			this.toolStripButton3.Text = "toolStripButton3";
+			this.toolStripButton3.ToolTipText = "Відмінити обробку";
 			// 
 			// groupBox2
 			// 
 			this.groupBox2.Controls.Add(this.textBox1);
 			this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.groupBox2.Location = new System.Drawing.Point(0, 0);
+			this.groupBox2.Location = new System.Drawing.Point(0, 39);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(323, 460);
-			this.groupBox2.TabIndex = 0;
+			this.groupBox2.Size = new System.Drawing.Size(480, 420);
+			this.groupBox2.TabIndex = 5;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "dds - формат";
 			// 
@@ -183,44 +164,46 @@
 			this.textBox1.Name = "textBox1";
 			this.textBox1.ReadOnly = true;
 			this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-			this.textBox1.Size = new System.Drawing.Size(317, 441);
+			this.textBox1.Size = new System.Drawing.Size(474, 401);
 			this.textBox1.TabIndex = 0;
 			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(709, 460);
-			this.Controls.Add(this.splitContainer1);
+			this.ClientSize = new System.Drawing.Size(480, 481);
+			this.Controls.Add(this.groupBox2);
+			this.Controls.Add(this.toolStrip1);
+			this.Controls.Add(this.statusStrip1);
 			this.Name = "Form1";
 			this.Text = "Form1";
 			this.Load += new System.EventHandler(this.Form1_Load);
-			this.splitContainer1.Panel1.ResumeLayout(false);
-			this.splitContainer1.Panel2.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-			this.splitContainer1.ResumeLayout(false);
-			this.groupBox1.ResumeLayout(false);
-			this.groupBox1.PerformLayout();
+			this.statusStrip1.ResumeLayout(false);
+			this.statusStrip1.PerformLayout();
+			this.toolStrip1.ResumeLayout(false);
+			this.toolStrip1.PerformLayout();
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
 		#endregion
 		private System.Windows.Forms.ToolTip toolTip1;
-		private System.Windows.Forms.SplitContainer splitContainer1;
-		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.Button button1;
-		private System.Windows.Forms.ProgressBar progressBar1;
-		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button button2;
+		private System.Windows.Forms.StatusStrip statusStrip1;
+		private System.Windows.Forms.ToolStrip toolStrip1;
+		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+		private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
+		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
+		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
+		private System.Windows.Forms.ToolStripButton toolStripButton1;
+		private System.Windows.Forms.ToolStripButton toolStripButton2;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.ToolStripButton toolStripButton3;
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.TextBox textBox1;
-		private System.Windows.Forms.Button button3;
 	}
 }
 
