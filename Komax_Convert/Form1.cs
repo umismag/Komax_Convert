@@ -12,6 +12,7 @@ using System.Reflection;
 using System.IO;
 using System.Threading;
 
+
 namespace Komax_Convert
 {
 	public partial class Form1 : Form
@@ -30,75 +31,71 @@ namespace Komax_Convert
 			
 		}
 
-		private async void button1_Click(object sender, EventArgs e)
-		{
-			try
-			{
-				Workbook WB;
-				OpenFileDialog xlsFile = new OpenFileDialog();
-				xlsFile.Filter = "Excel files (*.xls)|*.xls|Excel files (*.xlsx)|*.xlsx";
-				if (xlsFile.ShowDialog() == DialogResult.OK)
-				{
-					WB = await OpenXLSAsync(xlsFile.FileName);
-					toolStripStatusLabel1.Text = xlsFile.SafeFileName;
-					toolStripStatusLabel1.ToolTipText=xlsFile.FileName;
-					this.Activate();
-				}
-				else
-					return;
+		//private async void button1_Click(object sender, EventArgs e)
+		//{
+		//	try
+		//	{
+		//		Workbook WB;
+		//		OpenFileDialog xlsFile = new OpenFileDialog();
+		//		xlsFile.Filter = "Excel files (*.xls)|*.xls|Excel files (*.xlsx)|*.xlsx";
+		//		if (xlsFile.ShowDialog() == DialogResult.OK)
+		//		{
+		//			WB = await OpenXLSAsync(xlsFile.FileName);
+		//			toolStripStatusLabel1.Text = xlsFile.SafeFileName;
+		//			toolStripStatusLabel1.ToolTipText=xlsFile.FileName;
+		//			this.Activate();
+		//		}
+		//		else
+		//			return;
 
-				textBox1.Text = string.Empty;
-				groupBox2.Text = "dds - формат";
+		//		textBox1.Text = string.Empty;
+		//		groupBox2.Text = "dds - формат";
 
-				IProgress<int> onChangeProgress = new Progress<int>((i) =>
-				{
+		//		IProgress<int> onChangeProgress = new Progress<int>((i) =>
+		//		{
 
-					if (toolStripProgressBar1.Maximum == 0)
-					{
-						toolStripProgressBar1.Maximum = i;
-						toolStripStatusLabel1.Text += ", ("+ i.ToString()+" рядків)";
-					}
-					else
-					{
-						toolStripStatusLabel4.Text = i.ToString();
-						toolStripProgressBar1.Value = i;
-					}
+		//			if (toolStripProgressBar1.Maximum == 0)
+		//			{
+		//				toolStripProgressBar1.Maximum = i;
+		//				toolStripStatusLabel1.Text += ", ("+ i.ToString()+" рядків)";
+		//			}
+		//			else
+		//			{
+		//				toolStripStatusLabel4.Text = i.ToString();
+		//				toolStripProgressBar1.Value = i;
+		//			}
 						
-				});
+		//		});
 
-				CancellationTokenSource cts = new CancellationTokenSource();
-				toolStripButton3.Click += delegate { cts.Cancel(); };
+		//		CancellationTokenSource cts = new CancellationTokenSource();
+		//		toolStripButton3.Click += delegate { cts.Cancel(); };
 
 
-				await ProcessAsync(WB, onChangeProgress,cts.Token);
-				//ViewTree(NewArticles);
-				textBox1.Text = GenerateText(NewArticles);
+		//		await ProcessAsync(WB, onChangeProgress,cts.Token);
+		//		//ViewTree(NewArticles);
+		//		textBox1.Text = GenerateText(NewArticles);
 
-				XL.ActiveWorkbook.Close();
-				XL.Application.Quit();
-				XL.Quit();
-			}
-			catch (Exception err)
-			{
-				MessageBox.Show(err.Message);
-			}
-			finally
-			{
-				if (XL != null)
-					XL.Quit();
-				XL = null;
-			}
-		}
+		//		XL.ActiveWorkbook.Close();
+		//		XL.Application.Quit();
+		//		XL.Quit();
+		//	}
+		//	catch (Exception err)
+		//	{
+		//		MessageBox.Show(err.Message);
+		//	}
+		//	finally
+		//	{
+		//		if (XL != null)
+		//			XL.Quit();
+		//		XL = null;
+		//	}
+		//}
 
-		Task<Microsoft.Office.Interop.Excel.Workbook> OpenXLSAsync(string xlsFileName)
+		Workbook OpenXLSAsync(string xlsFileName)
 		{
-			return Task.Run( () =>
-			{
 				XL = new Microsoft.Office.Interop.Excel.Application();				
-				XL.Visible = true;
+				//XL.Visible = true;
 				return XL.Workbooks.Open(xlsFileName);
-			}
-				);
 		}
 
 		//void ViewTree(Dictionary<string, NewArticle> NewArticles)
@@ -289,10 +286,8 @@ namespace Komax_Convert
 
 		}
 
-		Task<int> ProcessAsync(Workbook WB, IProgress<int> ChangeProgressBar, CancellationToken cancellationToken)
+		int ProcessAsync(Workbook WB, /*IProgress<int> ChangeProgressBar,*/ CancellationToken cancellationToken)
 		{
-			return Task.Run(() =>
-		  {
 			  Worksheet T1 = WB.Sheets["А407-088Т1"];
 
 			  int NumberOfFirstRow = 8;
@@ -304,7 +299,7 @@ namespace Komax_Convert
 
 			  }
 
-			  ChangeProgressBar.Report(maxRow - NumberOfFirstRow);
+			  //ChangeProgressBar.Report(maxRow - NumberOfFirstRow);
 
 			  
 			  int CurrentRow = NumberOfFirstRow;
@@ -414,11 +409,11 @@ namespace Komax_Convert
 					  NewArticles.Add(ArticleKey, new NewArticle(wr, ArticleKey, new List<NewLeadSet> { nls }));
 				  }
 
-				  ChangeProgressBar.Report(CurrentRow - NumberOfFirstRow+1);
+				  //ChangeProgressBar.Report(CurrentRow - NumberOfFirstRow+1);
 				  CurrentRow++;
 			  }
 			  return CurrentRow - NumberOfFirstRow;
-		  });
+		 
 		}// Process!!!!!!!!
 
 		private void progressBar1_Click(object sender, EventArgs e)
@@ -436,8 +431,9 @@ namespace Komax_Convert
 				if (sfd.ShowDialog() == DialogResult.OK)
 				{
 					File.WriteAllText(sfd.FileName, textBox1.Text);
-					groupBox2.Text = "Файл " + sfd.FileName + " успішно записано";
-				}
+					//groupBox2.Text = "Файл " + sfd.FileName + " успішно записано";
+                    MessageBox.Show("Файл " + sfd.FileName + " успішно записано");
+                }
 			}
 			catch (Exception err)
 			{
@@ -445,9 +441,139 @@ namespace Komax_Convert
 				groupBox2.Text = "Помилка ";
 			}
 		}
-	}
 
-	class MarkingText
+        private void toolStripButton3_MouseLeave(object sender, EventArgs e)
+        {
+            toolStripButton3.Image = Properties.Resources.cancel_button;
+        }
+
+        private void toolStripButton3_MouseEnter(object sender, EventArgs e)
+        {
+            toolStripButton3.Image = Properties.Resources.cancel_button_red;
+        }
+
+        private void toolStripButton2_MouseEnter(object sender, EventArgs e)
+        {
+            toolStripButton2.Image = Properties.Resources.save_file_button_brown;
+        }
+
+        private void toolStripButton2_MouseLeave(object sender, EventArgs e)
+        {
+            toolStripButton2.Image = Properties.Resources.save_file_button;
+        }
+
+        private void toolStripButton1_MouseEnter(object sender, EventArgs e)
+        {
+            toolStripButton1.Image = Properties.Resources.xls_open_file_format_green;
+        }
+
+        private void toolStripButton1_MouseLeave(object sender, EventArgs e)
+        {
+            toolStripButton1.Image = Properties.Resources.xls_open_file_format;
+        }
+
+        private void btnFileOpen_Click_1(object sender, EventArgs e)
+        {
+            
+            try
+            {
+                Workbook WB;
+                OpenFileDialog xlsFile = new OpenFileDialog();
+                xlsFile.Filter = "Excel files (*.xls)|*.xls|Excel files (*.xlsx)|*.xlsx";
+                if (xlsFile.ShowDialog() == DialogResult.OK)
+                {
+					Task<Workbook> OpenXL = Task<Workbook>.Factory.StartNew(()=>OpenXLSAsync(xlsFile.FileName));
+					WB = OpenXL.Result;
+					                    //WB = await OpenXLSAsync(xlsFile.FileName);
+                    toolStripStatusLabel1.Text = xlsFile.SafeFileName;
+                    toolStripStatusLabel1.ToolTipText = xlsFile.FileName;
+                    this.Activate();
+                }
+                else
+                    return;
+
+                textBox1.Text = string.Empty;
+                //groupBox2.Text = "dds - формат";
+
+                //IProgress<int> onChangeProgress = new Progress<int>((i) =>
+                //{
+
+                //    if (toolStripProgressBar1.Maximum == 0)
+                //    {
+                //        toolStripProgressBar1.Maximum = i;
+                //        toolStripStatusLabel1.Text += ", (" + i.ToString() + " рядків)";
+                //    }
+                //    else
+                //    {
+                //        toolStripStatusLabel4.Text = i.ToString();
+                //        toolStripProgressBar1.Value = i;
+                //    }
+
+                //});
+
+                CancellationTokenSource cts = new CancellationTokenSource();
+                toolStripButton3.Click += delegate { cts.Cancel(); };
+                btnCancel.Enabled = true;
+                btnCancel.Click += delegate { cts.Cancel(); };
+
+				Task<int> processTask = Task<int>.Factory.StartNew(() => ProcessAsync(WB, cts.Token), cts.Token);
+				//await ProcessAsync(WB, cts.Token);
+				//ViewTree(NewArticles);
+				processTask.Wait(cts.Token);
+                textBox1.Text = GenerateText(NewArticles);
+
+                XL.ActiveWorkbook.Close(false);
+                XL.Application.Quit();
+                
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+                btnFileSave.Enabled = false;
+            }
+            finally
+            {
+                if (XL != null)
+                    XL.Quit();
+                XL = null;
+            }
+            btnFileSave.Enabled = true;
+            btnCancel.Enabled = false;
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            try
+            {
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "DDS files(*.dds)|*.dds";
+                sfd.FileName = "Article.dds";
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    File.WriteAllText(sfd.FileName, textBox1.Text);
+                    //groupBox2.Text = "Файл " + sfd.FileName + " успішно записано";
+                    MessageBox.Show("Файл " + sfd.FileName + " успішно записано");
+                }
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+                groupBox2.Text = "Помилка ";
+            }
+        }
+
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toolStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+    }
+
+    class MarkingText
 	{
 		double distance;
 		double Distance
