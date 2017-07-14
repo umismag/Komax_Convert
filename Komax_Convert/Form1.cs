@@ -541,6 +541,11 @@ namespace Komax_Convert
             btnCancel.Enabled = false;
         }
 
+		void EndingOfProcess()
+		{
+
+		}
+
         private void button2_Click_1(object sender, EventArgs e)
         {
             try
