@@ -516,10 +516,12 @@ namespace Komax_Convert
                 btnCancel.Enabled = true;
                 btnCancel.Click += delegate { cts.Cancel(); };
 
-				Task<int> processTask = Task<int>.Factory.StartNew(() => ProcessAsync(WB, cts.Token), cts.Token);
-				//await ProcessAsync(WB, cts.Token);
-				//ViewTree(NewArticles);
-				processTask.Wait(cts.Token);
+				backgroundWorker1.RunWorkerAsync(WB);
+
+				//Task<int> processTask = Task<int>.Factory.StartNew(() => ProcessAsync(WB, cts.Token), cts.Token);
+						//await ProcessAsync(WB, cts.Token);
+						//ViewTree(NewArticles);
+				//processTask.Wait(cts.Token);
                 textBox1.Text = GenerateText(NewArticles);
 
                 XL.ActiveWorkbook.Close(false);
@@ -541,11 +543,7 @@ namespace Komax_Convert
             btnCancel.Enabled = false;
         }
 
-		void EndingOfProcess()
-		{
-
-		}
-
+		
         private void button2_Click_1(object sender, EventArgs e)
         {
             try
@@ -576,9 +574,40 @@ namespace Komax_Convert
         {
 
         }
-    }
 
-    class MarkingText
+		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+		{
+			System.ComponentModel.BackgroundWorker worker;
+			worker = (System.ComponentModel.BackgroundWorker)sender;
+
+			Words WC = (Words)e.Argument;
+			WC.CountWords(worker, e);
+		}
+
+		private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+		{
+
+		}
+
+		private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		{
+			if (e.Error != null)
+				MessageBox.Show("Помилка: " + e.Error.Message);
+			else if (e.Cancelled)
+				MessageBox.Show("Конвертація зупинена.");
+			else
+				MessageBox.Show("Конвертація завершена успішно.");
+		}
+
+		private void btnCancel_Click(object sender, EventArgs e)
+		{
+			backgroundWorker1.CancelAsync();
+		}
+	}
+
+
+
+	class MarkingText
 	{
 		double distance;
 		double Distance
