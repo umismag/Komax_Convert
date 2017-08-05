@@ -18,17 +18,17 @@ namespace Komax_Convert
 	public partial class Form1 : Form
 	{
 		Microsoft.Office.Interop.Excel.Application XL;
-		
+
 
 		public Form1()
 		{
 			InitializeComponent();
-			
+
 		}
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			
+
 		}
 
 		//private async void button1_Click(object sender, EventArgs e)
@@ -64,7 +64,7 @@ namespace Komax_Convert
 		//				toolStripStatusLabel4.Text = i.ToString();
 		//				toolStripProgressBar1.Value = i;
 		//			}
-						
+
 		//		});
 
 		//		CancellationTokenSource cts = new CancellationTokenSource();
@@ -93,9 +93,9 @@ namespace Komax_Convert
 
 		Workbook OpenXLSAsync(string xlsFileName)
 		{
-				XL = new Microsoft.Office.Interop.Excel.Application();				
-				//XL.Visible = true;
-				return XL.Workbooks.Open(xlsFileName);
+			XL = new Microsoft.Office.Interop.Excel.Application();
+			//XL.Visible = true;
+			return XL.Workbooks.Open(xlsFileName);
 		}
 
 		//void ViewTree(Dictionary<string, NewArticle> NewArticles)
@@ -130,12 +130,12 @@ namespace Komax_Convert
 		string GenerateText(Dictionary<string, NewArticle> Newarticles)
 		{
 			StringBuilder res = new StringBuilder();
-			
+
 			SortedSet<NewArticle> sortedNewarticles = new SortedSet<NewArticle>();
-						
+
 			foreach (var na in Newarticles)
 				sortedNewarticles.Add(na.Value);
-			
+
 			foreach (NewArticle na in sortedNewarticles)
 			{
 				res.AppendFormat("[DeleteArticle]");
@@ -211,8 +211,10 @@ namespace Komax_Convert
 			WireLength = 8,
 			StrippingLength1 = 16,
 			PullOffLength1 = 17,
+			StrippingPullOffEnabled1 = 18,
 			StrippingLength2 = 29,
 			PullOffLength2 = 30,
+			StrippingPullOffEnabled2 = 31,
 			WireMarka = 36,
 			WireMarkaNew = 59,                      //!!!!!
 			Pieces = 40,
@@ -221,7 +223,7 @@ namespace Komax_Convert
 			ArticleKey = 58,
 			WireKey = 59,
 			FontKey = 64,
-					
+
 
 			MarkingTextBegin1_distance = 66,
 			MarkingTextBegin1_MarkingText = 65,
@@ -288,106 +290,126 @@ namespace Komax_Convert
 
 		int ProcessAsync(Workbook WB, /*IProgress<int> ChangeProgressBar,*/ CancellationToken cancellationToken)
 		{
-			  Worksheet T1 = WB.Sheets["А407-088Т1"];
+			Worksheet T1 = WB.Sheets[1];
 
-			  int NumberOfFirstRow = 8;
-			  int maxRow = NumberOfFirstRow;
+			int NumberOfFirstRow = 8;
+			int maxRow = NumberOfFirstRow;
 
-			  while (T1.Cells[maxRow, ColumnNumbers.WireSm2].Value != null)
-			  {
-				  maxRow++;
+			while (T1.Cells[maxRow, ColumnNumbers.WireSm2].Value != null)
+			{
+				maxRow++;
 
-			  }
+			}
 
-			  //ChangeProgressBar.Report(maxRow - NumberOfFirstRow);
+			//ChangeProgressBar.Report(maxRow - NumberOfFirstRow);
 
-			  
-			  int CurrentRow = NumberOfFirstRow;
-			  while (T1.Cells[CurrentRow, ColumnNumbers.WireSm2].Value != null)
-			  {
-				  if (cancellationToken.IsCancellationRequested)
-					  break;
 
-				  Wire wr = new Wire(T1.Cells[CurrentRow, ColumnNumbers.WireSm2].Value,
-					  T1.Cells[CurrentRow, ColumnNumbers.WireColorNew].Value.ToString(), T1.Cells[CurrentRow, ColumnNumbers.WireKey].Value.ToString().Replace(',', '.'));
-				  
-					  //T1.Cells[8,7]
-					   //Color = WireColor.GetEngColor(T1.Cells[CurrentRow, ColumnNumbers.WireColor].Value.ToString()),
-					  //wr.WireKey = wr.ElectricalSizeMM2.ToString().Replace(',', '.') + "_" + WireColor.toText(wr.Color) + "__PVA_" + T1.Cells[CurrentRow, ColumnNumbers.WireMarka].Value + "_U_660";
-					
-				  
-				  //string ArticleKey = wr.ElectricalSizeMM2.ToString().Replace(',', '.') + WireColor.toText(wr.Color);
-				  string ArticleKey = T1.Cells[CurrentRow, ColumnNumbers.ArticleKey].Value.ToString().Replace(',', '.');
+			int CurrentRow = NumberOfFirstRow;
+			while (T1.Cells[CurrentRow, ColumnNumbers.WireSm2].Value != null)
+			{
+				if (cancellationToken.IsCancellationRequested)
+					break;
 
-				  //string name = "\"" + (T1.Cells[CurrentRow, ColumnNumbers.NomerPoChertegu1].Value ?? "").ToString() + "   " + (T1.Cells[CurrentRow, ColumnNumbers.NomerPoChertegu2].Value ?? "").ToString() + "\"";
-				  string name = "\"" + T1.Cells[CurrentRow, ColumnNumbers.NameOfNewLeadSet].Value + "\"";
+				Wire wr = new Wire(T1.Cells[CurrentRow, ColumnNumbers.WireSm2].Value,
+					T1.Cells[CurrentRow, ColumnNumbers.WireColorNew].Value.ToString(), T1.Cells[CurrentRow, ColumnNumbers.WireKey].Value.ToString().Replace(',', '.'));
 
-				  double wireLength = T1.Cells[CurrentRow, ColumnNumbers.WireLength].Value;
+				//T1.Cells[8,7]
+				//Color = WireColor.GetEngColor(T1.Cells[CurrentRow, ColumnNumbers.WireColor].Value.ToString()),
+				//wr.WireKey = wr.ElectricalSizeMM2.ToString().Replace(',', '.') + "_" + WireColor.toText(wr.Color) + "__PVA_" + T1.Cells[CurrentRow, ColumnNumbers.WireMarka].Value + "_U_660";
 
-				  double?[] strippingLength = new double?[2]
-				  {GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.StrippingLength1].Value),
-				GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.StrippingLength2].Value)};
 
-				  double?[] pullOffLength = new double?[2]
-					  {GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.PullOffLength1].Value),
-					GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.PullOffLength2].Value)};
+				//string ArticleKey = wr.ElectricalSizeMM2.ToString().Replace(',', '.') + WireColor.toText(wr.Color);
+				string ArticleKey = T1.Cells[CurrentRow, ColumnNumbers.ArticleKey].Value.ToString().Replace(',', '.');
 
-				  int pieces = (int)T1.Cells[CurrentRow, ColumnNumbers.Pieces].Value;
+				//string name = "\"" + (T1.Cells[CurrentRow, ColumnNumbers.NomerPoChertegu1].Value ?? "").ToString() + "   " + (T1.Cells[CurrentRow, ColumnNumbers.NomerPoChertegu2].Value ?? "").ToString() + "\"";
+				string name = "\"" + T1.Cells[CurrentRow, ColumnNumbers.NameOfNewLeadSet].Value + "\"";
 
-				  int batchSize = (int)T1.Cells[CurrentRow, ColumnNumbers.BatchSize].Value;
+				double wireLength = T1.Cells[CurrentRow, ColumnNumbers.WireLength].Value;
 
-				  string fontKey = T1.Cells[CurrentRow, ColumnNumbers.FontKey].Value;
+				double? strippingLength1, strippingLength2, pullOffLength1, pullOffLength2;
 
-				  MarkingText MTBegin1 = new MarkingText(
-					  MarkingText.MarkingTextTypes.MarkingTextBegin
-					  , GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin1_distance].Value)
-					  , T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin1_MarkingText].Value
-					  , GetIntValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin1_turnText].Value)
-					  );
+				if (GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.StrippingPullOffEnabled1].Value) == 1 || GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.StrippingPullOffEnabled1].Value) == 2)
+				{
+					strippingLength1 = GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.StrippingLength1].Value);
+					pullOffLength1 = GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.PullOffLength1].Value);
+				}
+				else
+				{
+					strippingLength1 = null;
+					pullOffLength1 = null;
+				}
 
-				  MarkingText MTBegin2 = new MarkingText(
-					  MarkingText.MarkingTextTypes.MarkingTextBegin
-					  , GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin2_distance].Value)
-					  , T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin2_MarkingText].Value
-					  , GetIntValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin2_turnText].Value)
-					  );
+				if (GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.StrippingPullOffEnabled2].Value) == 1 || GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.StrippingPullOffEnabled2].Value) == 2)
+				{
+					strippingLength2 = GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.StrippingLength2].Value);
+					pullOffLength2 = GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.PullOffLength2].Value);
+				}
+				else
+				{
+					strippingLength2 = null;
+					pullOffLength2 = null;
+				}
 
-				  MarkingText MTBegin3 = new MarkingText(
-					  MarkingText.MarkingTextTypes.MarkingTextBegin
-					  , GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin3_distance].Value)
-					  , T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin3_MarkingText].Value
-					  , GetIntValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin3_turnText].Value)
-					  );
+				double?[] strippingLength = new double?[2] { strippingLength1, strippingLength2 };
 
-				  MarkingText MTEndless = new MarkingText(
-					  MarkingText.MarkingTextTypes.MarkingTextEndless
-					  , GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEndless_distance].Value)
-					  , T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEndless_MarkingText].Value
-					  , GetIntValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEndless_turnText].Value)
-					  );
+				double?[] pullOffLength = new double?[2] { pullOffLength1, pullOffLength2 };
 
-				  MarkingText MTEnd1 = new MarkingText(
-					  MarkingText.MarkingTextTypes.MarkingTextEnd
-					  , GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd1_distance].Value)
-					  , T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd1_MarkingText].Value
-					  , GetIntValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd1_turnText].Value)
-					  );
+				int pieces = (int)T1.Cells[CurrentRow, ColumnNumbers.Pieces].Value;
 
-				  MarkingText MTEnd2 = new MarkingText(
-					  MarkingText.MarkingTextTypes.MarkingTextEnd
-					  , GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd2_distance].Value)
-					  , T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd2_MarkingText].Value
-					  , GetIntValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd2_turnText].Value)
-					  );
+				int batchSize = (int)T1.Cells[CurrentRow, ColumnNumbers.BatchSize].Value;
 
-				  MarkingText MTEnd3 = new MarkingText(
-					  MarkingText.MarkingTextTypes.MarkingTextEnd
-					  , GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd3_distance].Value)
-					  , T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd3_MarkingText].Value
-					  , GetIntValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd3_turnText].Value)
-					  );
+				string fontKey = T1.Cells[CurrentRow, ColumnNumbers.FontKey].Value;
 
-				  NewMarkingTextWire nmtw = new NewMarkingTextWire(new List<MarkingText>
+				MarkingText MTBegin1 = new MarkingText(
+					MarkingText.MarkingTextTypes.MarkingTextBegin
+					, GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin1_distance].Value)
+					, T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin1_MarkingText].Value
+					, GetIntValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin1_turnText].Value)
+					);
+
+				MarkingText MTBegin2 = new MarkingText(
+					MarkingText.MarkingTextTypes.MarkingTextBegin
+					, GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin2_distance].Value)
+					, T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin2_MarkingText].Value
+					, GetIntValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin2_turnText].Value)
+					);
+
+				MarkingText MTBegin3 = new MarkingText(
+					MarkingText.MarkingTextTypes.MarkingTextBegin
+					, GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin3_distance].Value)
+					, T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin3_MarkingText].Value
+					, GetIntValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextBegin3_turnText].Value)
+					);
+
+				MarkingText MTEndless = new MarkingText(
+					MarkingText.MarkingTextTypes.MarkingTextEndless
+					, GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEndless_distance].Value)
+					, T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEndless_MarkingText].Value
+					, GetIntValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEndless_turnText].Value)
+					);
+
+				MarkingText MTEnd1 = new MarkingText(
+					MarkingText.MarkingTextTypes.MarkingTextEnd
+					, GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd1_distance].Value)
+					, T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd1_MarkingText].Value
+					, GetIntValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd1_turnText].Value)
+					);
+
+				MarkingText MTEnd2 = new MarkingText(
+					MarkingText.MarkingTextTypes.MarkingTextEnd
+					, GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd2_distance].Value)
+					, T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd2_MarkingText].Value
+					, GetIntValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd2_turnText].Value)
+					);
+
+				MarkingText MTEnd3 = new MarkingText(
+					MarkingText.MarkingTextTypes.MarkingTextEnd
+					, GetDoubleValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd3_distance].Value)
+					, T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd3_MarkingText].Value
+					, GetIntValue(T1.Cells[CurrentRow, ColumnNumbers.MarkingTextEnd3_turnText].Value)
+					);
+
+				NewMarkingTextWire nmtw = new NewMarkingTextWire(new List<MarkingText>
 				  {
 					  MTBegin1,
 					  MTBegin2,
@@ -398,22 +420,23 @@ namespace Komax_Convert
 					  MTEnd3
 				  });
 
-				  NewLeadSet nls = new NewLeadSet(name, new string[] { wr.WireKey }, new double[] { wireLength }, strippingLength, pullOffLength, pieces, fontKey, nmtw, batchSize);
+				NewLeadSet nls = new NewLeadSet(name, new string[] { wr.WireKey }, new double[] { wireLength }, strippingLength, pullOffLength, pieces, fontKey, nmtw, batchSize);
 
-				  if (NewArticles.ContainsKey(ArticleKey))
-				  {
-					  ((NewArticle)NewArticles[ArticleKey]).AddNewLeadSet(nls);
-				  }
-				  else
-				  {
-					  NewArticles.Add(ArticleKey, new NewArticle(wr, ArticleKey, new List<NewLeadSet> { nls }));
-				  }
+				if (NewArticles.ContainsKey(ArticleKey))
+				{
+					((NewArticle)NewArticles[ArticleKey]).AddNewLeadSet(nls);
+				}
+				else
+				{
+					NewArticles.Add(ArticleKey, new NewArticle(wr, ArticleKey, new List<NewLeadSet> { nls }));
+				}
 
-				  //ChangeProgressBar.Report(CurrentRow - NumberOfFirstRow+1);
-				  CurrentRow++;
-			  }
-			  return CurrentRow - NumberOfFirstRow;
-		 
+				//ChangeProgressBar.Report(CurrentRow - NumberOfFirstRow+1);
+				CurrentRow++;
+			}
+
+			return CurrentRow - NumberOfFirstRow;
+
 		}// Process!!!!!!!!
 
 		private void progressBar1_Click(object sender, EventArgs e)
@@ -432,8 +455,8 @@ namespace Komax_Convert
 				{
 					File.WriteAllText(sfd.FileName, textBox1.Text);
 					//groupBox2.Text = "Файл " + sfd.FileName + " успішно записано";
-                    MessageBox.Show("Файл " + sfd.FileName + " успішно записано");
-                }
+					MessageBox.Show("Файл " + sfd.FileName + " успішно записано");
+				}
 			}
 			catch (Exception err)
 			{
@@ -442,143 +465,144 @@ namespace Komax_Convert
 			}
 		}
 
-        private void toolStripButton3_MouseLeave(object sender, EventArgs e)
-        {
-            toolStripButton3.Image = Properties.Resources.cancel_button;
-        }
+		private void toolStripButton3_MouseLeave(object sender, EventArgs e)
+		{
+			toolStripButton3.Image = Properties.Resources.cancel_button;
+		}
 
-        private void toolStripButton3_MouseEnter(object sender, EventArgs e)
-        {
-            toolStripButton3.Image = Properties.Resources.cancel_button_red;
-        }
+		private void toolStripButton3_MouseEnter(object sender, EventArgs e)
+		{
+			toolStripButton3.Image = Properties.Resources.cancel_button_red;
+		}
 
-        private void toolStripButton2_MouseEnter(object sender, EventArgs e)
-        {
-            toolStripButton2.Image = Properties.Resources.save_file_button_brown;
-        }
+		private void toolStripButton2_MouseEnter(object sender, EventArgs e)
+		{
+			toolStripButton2.Image = Properties.Resources.save_file_button_brown;
+		}
 
-        private void toolStripButton2_MouseLeave(object sender, EventArgs e)
-        {
-            toolStripButton2.Image = Properties.Resources.save_file_button;
-        }
+		private void toolStripButton2_MouseLeave(object sender, EventArgs e)
+		{
+			toolStripButton2.Image = Properties.Resources.save_file_button;
+		}
 
-        private void toolStripButton1_MouseEnter(object sender, EventArgs e)
-        {
-            toolStripButton1.Image = Properties.Resources.xls_open_file_format_green;
-        }
+		private void toolStripButton1_MouseEnter(object sender, EventArgs e)
+		{
+			toolStripButton1.Image = Properties.Resources.xls_open_file_format_green;
+		}
 
-        private void toolStripButton1_MouseLeave(object sender, EventArgs e)
-        {
-            toolStripButton1.Image = Properties.Resources.xls_open_file_format;
-        }
+		private void toolStripButton1_MouseLeave(object sender, EventArgs e)
+		{
+			toolStripButton1.Image = Properties.Resources.xls_open_file_format;
+		}
 
-        private void btnFileOpen_Click_1(object sender, EventArgs e)
-        {
-            
-            try
-            {
-                Workbook WB;
-                OpenFileDialog xlsFile = new OpenFileDialog();
-                xlsFile.Filter = "Excel files (*.xls)|*.xls|Excel files (*.xlsx)|*.xlsx";
-                if (xlsFile.ShowDialog() == DialogResult.OK)
-                {
-					Task<Workbook> OpenXL = Task<Workbook>.Factory.StartNew(()=>OpenXLSAsync(xlsFile.FileName));
+		private void btnFileOpen_Click_1(object sender, EventArgs e)
+		{
+
+			try
+			{
+				Workbook WB;
+				OpenFileDialog xlsFile = new OpenFileDialog();
+				xlsFile.Filter = "Excel files (*.xls)|*.xls|Excel files (*.xlsx)|*.xlsx";
+				if (xlsFile.ShowDialog() == DialogResult.OK)
+				{
+					Task<Workbook> OpenXL = Task<Workbook>.Factory.StartNew(() => OpenXLSAsync(xlsFile.FileName));
 					WB = OpenXL.Result;
-					                    //WB = await OpenXLSAsync(xlsFile.FileName);
-                    toolStripStatusLabel1.Text = xlsFile.SafeFileName;
-                    toolStripStatusLabel1.ToolTipText = xlsFile.FileName;
-                    this.Activate();
-                }
-                else
-                    return;
+					//WB = await OpenXLSAsync(xlsFile.FileName);
+					//toolStripStatusLabel1.Text = xlsFile.SafeFileName;
+					//toolStripStatusLabel1.ToolTipText = xlsFile.FileName;
+					this.Activate();
+				}
+				else
+					return;
 
-                textBox1.Text = string.Empty;
-                //groupBox2.Text = "dds - формат";
+				textBox1.Text = string.Empty;
+				//groupBox2.Text = "dds - формат";
 
-                //IProgress<int> onChangeProgress = new Progress<int>((i) =>
-                //{
+				//IProgress<int> onChangeProgress = new Progress<int>((i) =>
+				//{
 
-                //    if (toolStripProgressBar1.Maximum == 0)
-                //    {
-                //        toolStripProgressBar1.Maximum = i;
-                //        toolStripStatusLabel1.Text += ", (" + i.ToString() + " рядків)";
-                //    }
-                //    else
-                //    {
-                //        toolStripStatusLabel4.Text = i.ToString();
-                //        toolStripProgressBar1.Value = i;
-                //    }
+				//    if (toolStripProgressBar1.Maximum == 0)
+				//    {
+				//        toolStripProgressBar1.Maximum = i;
+				//        toolStripStatusLabel1.Text += ", (" + i.ToString() + " рядків)";
+				//    }
+				//    else
+				//    {
+				//        toolStripStatusLabel4.Text = i.ToString();
+				//        toolStripProgressBar1.Value = i;
+				//    }
 
-                //});
+				//});
 
-                CancellationTokenSource cts = new CancellationTokenSource();
-                toolStripButton3.Click += delegate { cts.Cancel(); };
-                btnCancel.Enabled = true;
-                btnCancel.Click += delegate { cts.Cancel(); };
+				CancellationTokenSource cts = new CancellationTokenSource();
+				toolStripButton3.Click += delegate { cts.Cancel(); };
+				btnCancel.Enabled = true;
+				btnCancel.Click += delegate { cts.Cancel(); };
 
 				Task<int> processTask = Task<int>.Factory.StartNew(() => ProcessAsync(WB, cts.Token), cts.Token);
 				//await ProcessAsync(WB, cts.Token);
 				//ViewTree(NewArticles);
-				processTask.Wait(cts.Token);
-                textBox1.Text = GenerateText(NewArticles);
+				MessageBox.Show("Успішно конвертовано " + processTask.Result.ToString() + " рядків.");
+				//processTask.Wait(cts.Token);
+				textBox1.Text = GenerateText(NewArticles);
 
-                XL.ActiveWorkbook.Close(false);
-                XL.Application.Quit();
-                
-            }
-            catch (Exception err)
-            {
-                MessageBox.Show(err.Message);
-                btnFileSave.Enabled = false;
-            }
-            finally
-            {
-                if (XL != null)
-                    XL.Quit();
-                XL = null;
-            }
-            btnFileSave.Enabled = true;
-            btnCancel.Enabled = false;
-        }
+				XL.ActiveWorkbook.Close(false);
+				XL.Application.Quit();
+
+			}
+			catch (Exception err)
+			{
+				MessageBox.Show(err.Message);
+				btnFileSave.Enabled = false;
+			}
+			finally
+			{
+				if (XL != null)
+					XL.Quit();
+				XL = null;
+			}
+			btnFileSave.Enabled = true;
+			btnCancel.Enabled = false;
+		}
 
 		void EndingOfProcess()
 		{
 
 		}
 
-        private void button2_Click_1(object sender, EventArgs e)
-        {
-            try
-            {
-                SaveFileDialog sfd = new SaveFileDialog();
-                sfd.Filter = "DDS files(*.dds)|*.dds";
-                sfd.FileName = "Article.dds";
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    File.WriteAllText(sfd.FileName, textBox1.Text);
-                    //groupBox2.Text = "Файл " + sfd.FileName + " успішно записано";
-                    MessageBox.Show("Файл " + sfd.FileName + " успішно записано");
-                }
-            }
-            catch (Exception err)
-            {
-                MessageBox.Show(err.Message);
-                groupBox2.Text = "Помилка ";
-            }
-        }
+		private void button2_Click_1(object sender, EventArgs e)
+		{
+			try
+			{
+				SaveFileDialog sfd = new SaveFileDialog();
+				sfd.Filter = "DDS files(*.dds)|*.dds";
+				sfd.FileName = "Article.dds";
+				if (sfd.ShowDialog() == DialogResult.OK)
+				{
+					File.WriteAllText(sfd.FileName, textBox1.Text);
+					//groupBox2.Text = "Файл " + sfd.FileName + " успішно записано";
+					MessageBox.Show("Файл " + sfd.FileName + " успішно записано");
+				}
+			}
+			catch (Exception err)
+			{
+				MessageBox.Show(err.Message);
+				groupBox2.Text = "Помилка ";
+			}
+		}
 
-        private void toolStripButton3_Click(object sender, EventArgs e)
-        {
+		private void toolStripButton3_Click(object sender, EventArgs e)
+		{
 
-        }
+		}
 
-        private void toolStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
+		private void toolStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+		{
 
-        }
-    }
+		}
+	}
 
-    class MarkingText
+	class MarkingText
 	{
 		double distance;
 		double Distance
@@ -704,7 +728,7 @@ namespace Komax_Convert
 	//MarkingTextBegin = 30,"0   20",1    MarkingTextBegin = 80,"0   20",1    MarkingTextBegin = 130,"0   20",1    MarkingTextEndless = 100,"0   20",1    MarkingTextEnd = 30,"0   20",1    MarkingTextEnd = 80,"0   20",1    MarkingTextEnd = 130,"0   20",1
 
 
-	class NewLeadSet:IComparable<NewLeadSet>
+	class NewLeadSet : IComparable<NewLeadSet>
 	{
 		enum leadSetTypes { singleLead, doubleLead, twisterLead };
 
@@ -825,7 +849,7 @@ namespace Komax_Convert
 			}
 		}
 
-		
+
 
 		NewMarkingTextWire newMarkingText;
 		public NewMarkingTextWire NewMarkingText
@@ -877,7 +901,7 @@ namespace Komax_Convert
 
 		public NewLeadSet(string name, string[] wireKey, double[] wireLength, double?[] strippingLength, double?[] pullOffLength, int pieces, string fontKey, NewMarkingTextWire newMarkingTextWire, int batchSize) : this(name, wireKey, wireLength, strippingLength, pullOffLength, pieces, fontKey, newMarkingTextWire)
 		{
-			BatchSize=batchSize;
+			BatchSize = batchSize;
 		}
 
 		public List<string> PrintNewLeadSet()
@@ -905,10 +929,20 @@ namespace Komax_Convert
 								s += element.ToString() + ", ";
 						}
 						else
+						{
+							s += ", ";
+						}
+					}
+					for(int i=s.Length-1;i>=0;i--)
+					{
+						if (s[i] == ' ' || s[i] == ',')
+							s = s.Remove(s.Length - 1, 1);
+						else
 							break;
 					}
-					if (s.LastIndexOf(", ") == s.Length - 2)
-						s = s.Remove(s.Length - 2, 2);
+
+					//if (s.LastIndexOf(", ") == s.Length - 2)
+					//	s = s.Remove(s.Length - 2, 2);
 					res.Add(propinfo.Name + " = " + s);
 				}
 				else if (propinfo.Name == "NewMarkingText")
@@ -924,7 +958,7 @@ namespace Komax_Convert
 
 		public int CompareTo(NewLeadSet other)
 		{
-			return Compare(this, other)*(-1);
+			return Compare(this, other) * (-1);
 		}
 		public int Compare(NewLeadSet x, NewLeadSet y)
 		{
@@ -938,7 +972,7 @@ namespace Komax_Convert
 			}
 		}
 
-		
+
 		//DeleteArticle]
 		//	ArticleKey = A2815
 
@@ -1063,16 +1097,16 @@ namespace Komax_Convert
 			WireKey = ElectricalSizeMM2 + Color;
 		}
 
-		public Wire(double electricalSizeInMM2, string color, string wireKey):this(electricalSizeInMM2,color)
+		public Wire(double electricalSizeInMM2, string color, string wireKey) : this(electricalSizeInMM2, color)
 		{
 			WireKey = wireKey;
 		}
 
 		public int Compare(Wire x, Wire y)
 		{
-			if (x.ElectricalSizeMM2>y.ElectricalSizeMM2)
+			if (x.ElectricalSizeMM2 > y.ElectricalSizeMM2)
 				return 1;
-			if (x.ElectricalSizeMM2<y.ElectricalSizeMM2)
+			if (x.ElectricalSizeMM2 < y.ElectricalSizeMM2)
 				return -1;
 			else
 				return 0;
@@ -1092,7 +1126,7 @@ namespace Komax_Convert
 		}
 	}
 
-	class NewArticle: IComparable<NewArticle>
+	class NewArticle : IComparable<NewArticle>
 	{
 		//List<NewLeadSet> items = new List<NewLeadSet>();
 		SortedSet<NewLeadSet> items = new SortedSet<NewLeadSet>();
@@ -1150,7 +1184,7 @@ namespace Komax_Convert
 			WireOfNewArticle = wire;
 		}
 
-		public NewArticle(Wire wire, string articleKey):this(wire)
+		public NewArticle(Wire wire, string articleKey) : this(wire)
 		{
 			ArticleKey = articleKey;
 			//WireOfNewArticle = wire;
@@ -1158,8 +1192,8 @@ namespace Komax_Convert
 
 		public NewArticle(Wire wire, string articleKey, List<NewLeadSet> NewLeadSets) : this(wire, articleKey)
 		{
-			foreach(NewLeadSet item in NewLeadSets)
-			items.Add(item);
+			foreach (NewLeadSet item in NewLeadSets)
+				items.Add(item);
 		}
 
 		public void AddNewLeadSet(NewLeadSet leadSet)
